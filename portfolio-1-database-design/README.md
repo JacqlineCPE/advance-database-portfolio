@@ -14,7 +14,7 @@ This folder holds the database design and modelling for MarketLane, a small Nige
 
 `er-diagram.png` is the entity-relationship diagram for the database, and `schema-screenshot.png` shows the schema as created in MySQL.
 
-![ER diagram]https://github.com/JacqlineCPE/advance-database-portfolio/blob/main/portfolio-1-database-design/er-diagram.png
+![ER diagram](https://github.com/JacqlineCPE/advance-database-portfolio/blob/main/portfolio-1-database-design/er-diagram.png)
 
 ## How the database is organised
 
@@ -28,5 +28,4 @@ An order can have more than one payment, which allows for a failed attempt follo
 
 The schema protects the data with constraints rather than relying on the application to get things right. Emails, product SKUs, payment references and tracking numbers must all be unique. Prices, stock levels and payment amounts cannot be negative, and an order line must have a quantity of at least one. Order, payment and delivery statuses are limited to a fixed list of values. Foreign keys stop you from creating an order for a customer who does not exist, or from deleting a customer, product or address that is still referenced by an order, while removing a customer with no orders cleanly removes their addresses along with them.
 
-![Schema screenshot]
-https://github.com/JacqlineCPE/advance-database-portfolio/blob/main/portfolio-1-database-design/schema-screenshot.png
+![Schema screenshot](https://github.com/JacqlineCPE/advance-database-portfolio/blob/main/portfolio-1-database-design/schema-screenshot.png)
