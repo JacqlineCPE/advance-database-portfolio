@@ -1,0 +1,203 @@
+MarketLane: execution plans BEFORE adding indexes
+==================================================
+Captured with EXPLAIN ANALYZE in MySQL Workbench 8.0.
+Only the indexes from the Portfolio 1 schema exist at this point: primary keys,
+unique keys, and the single-column indexes InnoDB creates for every foreign key.
+Each query was run twice and the second run is recorded here, so the buffer pool was warm.
+
+
+Q1: Order history for one customer
+----------------------------------
+EXPLAIN ANALYZE
+SELECT o.order_id, o.order_date, o.status, o.total_amount,
+       COUNT(i.order_item_id) AS items
+FROM customer_order o
+JOIN order_item i ON i.order_id = o.order_id
+WHERE o.customer_id = 1234
+GROUP BY o.order_id, o.order_date, o.status, o.total_amount
+ORDER BY o.order_date DESC;
+
+-> Sort: o.order_date DESC  (actual time=0.346..0.349 rows=5 loops=1)
+    -> Table scan on <temporary>  (actual time=0.311..0.314 rows=5 loops=1)
+        -> Aggregate using temporary table  (actual time=0.309..0.309 rows=5 loops=1)
+            -> Nested loop inner join  (cost=4.3 rows=13) (actual time=0.0974..0.177 rows=14 loops=1)
+                -> Index lookup on o using fk_order_customer (customer_id=1234)  (cost=1.75 rows=5) (actual time=0.0788..0.085 rows=5 loops=1)
+                -> Covering index lookup on i using uq_order_product (order_id=o.order_id)  (cost=0.302 rows=2.59) (actual time=0.0109..0.0164 rows=2.8 loops=5)
+
+
+Q2: Monthly revenue for the last 12 months
+------------------------------------------
+EXPLAIN ANALYZE
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS month,
+       COUNT(*) AS orders,
+       SUM(total_amount) AS revenue
+FROM customer_order
+WHERE status IN ('paid', 'shipped', 'delivered')
+  AND order_date >= '2025-10-01' AND order_date < '2026-10-01'
+GROUP BY month
+ORDER BY month;
+
+-> Sort: month  (actual time=384..384 rows=12 loops=1)
+    -> Table scan on <temporary>  (actual time=384..384 rows=12 loops=1)
+        -> Aggregate using temporary table  (actual time=384..384 rows=12 loops=1)
+            -> Filter: ((customer_order.`status` in ('paid','shipped','delivered')) and (customer_order.order_date >= TIMESTAMP'2025-10-01 00:00:00') and (customer_order.order_date < TIMESTAMP'2026-10-01 00:00:00'))  (cost=10068 rows=5552) (actual time=0.244..255 rows=42467 loops=1)
+                -> Table scan on customer_order  (cost=10068 rows=99960) (actual time=0.227..124 rows=100005 loops=1)
+
+
+Q3: Top 10 products by units sold in a date range
+-------------------------------------------------
+EXPLAIN ANALYZE
+SELECT p.product_id, p.name, c.name AS category,
+       SUM(i.quantity) AS units_sold,
+       SUM(i.quantity * i.unit_price) AS revenue
+FROM order_item i
+JOIN customer_order o ON o.order_id = i.order_id
+JOIN product p ON p.product_id = i.product_id
+JOIN category c ON c.category_id = p.category_id
+WHERE o.status = 'delivered'
+  AND o.order_date BETWEEN '2026-01-01' AND '2026-06-30 23:59:59'
+GROUP BY p.product_id, p.name, c.name
+ORDER BY units_sold DESC
+LIMIT 10;
+
+-> Limit: 10 row(s)  (actual time=1638..1638 rows=10 loops=1)
+    -> Sort: units_sold DESC, limit input to 10 row(s) per chunk  (actual time=1638..1638 rows=10 loops=1)
+        -> Table scan on <temporary>  (actual time=1632..1635 rows=4997 loops=1)
+            -> Aggregate using temporary table  (actual time=1632..1632 rows=4997 loops=1)
+                -> Nested loop inner join  (cost=19283 rows=5953) (actual time=659..1465 rows=37148 loops=1)
+                    -> Inner hash join (no condition)  (cost=14964 rows=28790) (actual time=659..851 rows=185740 loops=1)
+                        -> Covering index scan on c using uq_category_name  (cost=367e-6 rows=5) (actual time=0.0495..0.075 rows=5 loops=1)
+                        -> Hash
+                            -> Nested loop inner join  (cost=12084 rows=5758) (actual time=0.144..512 rows=37148 loops=1)
+                                -> Filter: ((o.`status` = 'delivered') and (o.order_date between '2026-01-01' and '2026-06-30 23:59:59'))  (cost=10068 rows=2221) (actual time=0.0974..269 rows=14877 loops=1)
+                                    -> Table scan on o  (cost=10068 rows=99960) (actual time=0.0773..92.5 rows=100005 loops=1)
+                                -> Index lookup on i using uq_order_product (order_id=o.order_id)  (cost=0.648 rows=2.59) (actual time=0.0132..0.0156 rows=2.5 loops=14877)
+                    -> Filter: (p.category_id = c.category_id)  (cost=0.05 rows=0.207) (actual time=0.00305..0.00309 rows=0.2 loops=185740)
+                        -> Single-row index lookup on p using PRIMARY (product_id=i.product_id)  (cost=0.05 rows=1) (actual time=0.0026..0.00266 rows=1 loops=185740)
+
+
+Q4: Products at or below reorder level
+--------------------------------------
+EXPLAIN ANALYZE
+SELECT p.sku, p.name, inv.quantity_on_hand, inv.reorder_level,
+       inv.reorder_level - inv.quantity_on_hand AS shortfall
+FROM inventory inv
+JOIN product p ON p.product_id = inv.product_id
+WHERE inv.quantity_on_hand <= inv.reorder_level
+  AND p.is_active = TRUE
+ORDER BY shortfall DESC;
+
+-> Sort: shortfall DESC  (actual time=44.9..45 rows=193 loops=1)
+    -> Stream results  (cost=678 rows=161) (actual time=0.196..44.6 rows=193 loops=1)
+        -> Nested loop inner join  (cost=678 rows=161) (actual time=0.186..43.9 rows=193 loops=1)
+            -> Filter: (p.is_active = true)  (cost=509 rows=484) (actual time=0.151..13.1 rows=5008 loops=1)
+                -> Table scan on p  (cost=509 rows=4844) (actual time=0.148..10.2 rows=5008 loops=1)
+            -> Filter: (inv.quantity_on_hand <= inv.reorder_level)  (cost=0.25 rows=0.333) (actual time=0.0058..0.00583 rows=0.0385 loops=5008)
+                -> Single-row index lookup on inv using PRIMARY (product_id=p.product_id)  (cost=0.25 rows=1) (actual time=0.00486..0.00497 rows=1 loops=5008)
+
+
+Q5: Latest status of every in-transit delivery
+----------------------------------------------
+EXPLAIN ANALYZE
+SELECT d.delivery_id, d.tracking_number, d.courier_name,
+       h.status AS latest_status, h.location, h.recorded_at
+FROM delivery d
+JOIN delivery_status_history h ON h.delivery_id = d.delivery_id
+WHERE d.status = 'in_transit'
+  AND h.recorded_at = (SELECT MAX(h2.recorded_at)
+                       FROM delivery_status_history h2
+                       WHERE h2.delivery_id = d.delivery_id)
+ORDER BY h.recorded_at DESC
+LIMIT 50;
+
+-> Limit: 50 row(s)  (actual time=1395..1395 rows=50 loops=1)
+    -> Sort: h.recorded_at DESC, limit input to 50 row(s) per chunk  (actual time=1395..1395 rows=50 loops=1)
+        -> Stream results  (cost=27949 rows=58193) (actual time=0.459..1383 rows=15001 loops=1)
+            -> Nested loop inner join  (cost=27949 rows=58193) (actual time=0.447..1331 rows=15001 loops=1)
+                -> Filter: (d.`status` = 'in_transit')  (cost=7581 rows=14986) (actual time=0.259..117 rows=15001 loops=1)
+                    -> Table scan on d  (cost=7581 rows=74928) (actual time=0.249..86.2 rows=75002 loops=1)
+                -> Filter: (h.recorded_at = (select #2))  (cost=0.971 rows=3.88) (actual time=0.0784..0.0805 rows=1 loops=15001)
+                    -> Index lookup on h using fk_history_delivery (delivery_id=d.delivery_id)  (cost=0.971 rows=3.88) (actual time=0.0163..0.0195 rows=3 loops=15001)
+                    -> Select #2 (subquery in condition; dependent)
+                        -> Aggregate: max(h2.recorded_at)  (cost=1.75 rows=1) (actual time=0.0165..0.0166 rows=1 loops=45003)
+                            -> Index lookup on h2 using fk_history_delivery (delivery_id=d.delivery_id)  (cost=1.36 rows=3.88) (actual time=0.0123..0.0146 rows=3 loops=45003)
+
+
+Q6: Products matching two attributes (colour = Black, storage = 128GB)
+----------------------------------------------------------------------
+EXPLAIN ANALYZE
+SELECT p.product_id, p.name, p.unit_price
+FROM product p
+JOIN product_attribute a1 ON a1.product_id = p.product_id
+                         AND a1.attribute_name = 'colour' AND a1.attribute_value = 'Black'
+JOIN product_attribute a2 ON a2.product_id = p.product_id
+                         AND a2.attribute_name = 'storage' AND a2.attribute_value = '128GB'
+WHERE p.is_active = TRUE
+ORDER BY p.unit_price;
+
+-> Nested loop inner join  (cost=1312 rows=48.4) (actual time=18.9..97.9 rows=85 loops=1)
+    -> Nested loop inner join  (cost=1239 rows=484) (actual time=18..89.3 rows=834 loops=1)
+        -> Sort: p.unit_price  (cost=509 rows=4844) (actual time=17.8..20.3 rows=5008 loops=1)
+            -> Filter: (p.is_active = true)  (cost=509 rows=4844) (actual time=0.195..12.2 rows=5008 loops=1)
+                -> Table scan on p  (cost=509 rows=4844) (actual time=0.193..10.7 rows=5008 loops=1)
+        -> Filter: (a1.attribute_value = 'Black')  (cost=0.508 rows=0.1) (actual time=0.0135..0.0135 rows=0.167 loops=5008)
+            -> Single-row index lookup on a1 using uq_product_attribute (product_id=p.product_id, attribute_name='colour')  (cost=0.508 rows=1) (actual time=0.0126..0.0127 rows=0.999 loops=5008)
+    -> Filter: (a2.attribute_value = '128GB')  (cost=0.508 rows=0.1) (actual time=0.00989..0.00991 rows=0.102 loops=834)
+        -> Single-row index lookup on a2 using uq_product_attribute (product_id=p.product_id, attribute_name='storage')  (cost=0.508 rows=1) (actual time=0.00931..0.00934 rows=0.402 loops=834)
+
+
+Q7: Customers ranked by spend within their state
+------------------------------------------------
+EXPLAIN ANALYZE
+SELECT state, full_name, total_spent, state_rank
+FROM (
+    SELECT a.state, c.full_name,
+           SUM(o.total_amount) AS total_spent,
+           RANK() OVER (PARTITION BY a.state ORDER BY SUM(o.total_amount) DESC) AS state_rank
+    FROM customer_order o
+    JOIN customer c ON c.customer_id = o.customer_id
+    JOIN address a ON a.address_id = o.address_id
+    WHERE o.status = 'delivered'
+    GROUP BY a.state, c.customer_id, c.full_name
+) ranked
+WHERE state_rank <= 3
+ORDER BY state, state_rank;
+
+-> Sort: ranked.state, ranked.state_rank  (cost=2.6..2.6 rows=0) (actual time=1036..1036 rows=24 loops=1)
+    -> Filter: (ranked.state_rank <= 3)  (cost=2.5..2.5 rows=0) (actual time=1029..1035 rows=24 loops=1)
+        -> Table scan on ranked  (cost=2.5..2.5 rows=0) (actual time=1029..1034 rows=16801 loops=1)
+            -> Materialize  (cost=0..0 rows=0) (actual time=1029..1029 rows=16801 loops=1)
+                -> Window aggregate: rank() OVER (PARTITION BY a.state ORDER BY sum(o.total_amount) desc )   (actual time=994..1016 rows=16801 loops=1)
+                    -> Sort: a.state, total_spent DESC  (actual time=994..998 rows=16801 loops=1)
+                        -> Table scan on <temporary>  (actual time=947..952 rows=16801 loops=1)
+                            -> Aggregate using temporary table  (actual time=947..947 rows=16801 loops=1)
+                                -> Nested loop inner join  (cost=24063 rows=19992) (actual time=0.153..658 rows=60001 loops=1)
+                                    -> Nested loop inner join  (cost=17065 rows=19992) (actual time=0.143..419 rows=60001 loops=1)
+                                        -> Filter: (o.`status` = 'delivered')  (cost=10068 rows=19992) (actual time=0.123..176 rows=60001 loops=1)
+                                            -> Table scan on o  (cost=10068 rows=99960) (actual time=0.117..115 rows=100005 loops=1)
+                                        -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00356..0.00363 rows=1 loops=60001)
+                                    -> Single-row index lookup on a using PRIMARY (address_id=o.address_id)  (cost=0.25 rows=1) (actual time=0.00344..0.00352 rows=1 loops=60001)
+
+
+Q8: Pending orders with no successful payment
+---------------------------------------------
+EXPLAIN ANALYZE
+SELECT o.order_id, o.order_date, o.total_amount, c.email
+FROM customer_order o
+JOIN customer c ON c.customer_id = o.customer_id
+WHERE o.status = 'pending'
+  AND NOT EXISTS (SELECT 1 FROM payment p
+                  WHERE p.order_id = o.order_id AND p.status = 'successful')
+  AND o.order_date < '2026-10-01'
+ORDER BY o.order_date
+LIMIT 100;
+
+-> Limit: 100 row(s)  (cost=36062 rows=100) (actual time=140..142 rows=100 loops=1)
+    -> Nested loop antijoin  (cost=36062 rows=105161) (actual time=140..142 rows=100 loops=1)
+        -> Nested loop inner join  (cost=21730 rows=99960) (actual time=140..141 rows=100 loops=1)
+            -> Sort: o.order_date  (cost=10068 rows=99960) (actual time=140..140 rows=100 loops=1)
+                -> Filter: ((o.`status` = 'pending') and (o.order_date < TIMESTAMP'2026-10-01 00:00:00'))  (cost=10068 rows=99960) (actual time=0.255..131 rows=7863 loops=1)
+                    -> Table scan on o  (cost=10068 rows=99960) (actual time=0.162..98.9 rows=100005 loops=1)
+            -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00391..0.00398 rows=1 loops=100)
+        -> Filter: (p.`status` = 'successful')  (cost=0.602 rows=1.05) (actual time=0.0124..0.0124 rows=0 loops=100)
+            -> Index lookup on p using fk_payment_order (order_id=o.order_id)  (cost=0.602 rows=1.05) (actual time=0.00953..0.0114 rows=1 loops=100)
