@@ -1,0 +1,184 @@
+[
+  {
+    "_id": 1,
+    "sku": "SKU-PH-001",
+    "name": "Smartphone X10 128GB",
+    "description": "6.6-inch display, 128GB storage, dual SIM",
+    "category": {
+      "id": 2,
+      "name": "Phones"
+    },
+    "unit_price": 185000.0,
+    "is_active": true,
+    "attributes": {
+      "colour": "Black",
+      "ram": "6GB",
+      "storage": "128GB"
+    },
+    "stock": {
+      "quantity_on_hand": 25,
+      "reorder_level": 5
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 2,
+    "sku": "SKU-PH-002",
+    "name": "Smartphone Pro 256GB",
+    "description": "6.7-inch AMOLED, 256GB storage, 5G",
+    "category": {
+      "id": 2,
+      "name": "Phones"
+    },
+    "unit_price": 245000.0,
+    "is_active": true,
+    "attributes": {
+      "colour": "Midnight Blue",
+      "ram": "8GB",
+      "storage": "256GB"
+    },
+    "stock": {
+      "quantity_on_hand": 3,
+      "reorder_level": 5
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 3,
+    "sku": "SKU-EL-003",
+    "name": "Power Bank 20000mAh",
+    "description": "Fast charging, dual USB output",
+    "category": {
+      "id": 1,
+      "name": "Electronics"
+    },
+    "unit_price": 18500.0,
+    "is_active": true,
+    "attributes": {
+      "capacity": "20000mAh"
+    },
+    "stock": {
+      "quantity_on_hand": 60,
+      "reorder_level": 10
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 4,
+    "sku": "SKU-EL-004",
+    "name": "Bluetooth Speaker",
+    "description": "Portable, 12-hour battery, waterproof",
+    "category": {
+      "id": 1,
+      "name": "Electronics"
+    },
+    "unit_price": 32000.0,
+    "is_active": true,
+    "attributes": {
+      "colour": "Red"
+    },
+    "stock": {
+      "quantity_on_hand": 14,
+      "reorder_level": 5
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 5,
+    "sku": "SKU-FA-005",
+    "name": "Ankara Print Shirt",
+    "description": "100% cotton, short sleeve",
+    "category": {
+      "id": 3,
+      "name": "Fashion"
+    },
+    "unit_price": 12000.0,
+    "is_active": true,
+    "attributes": {
+      "material": "Cotton",
+      "size": "L"
+    },
+    "stock": {
+      "quantity_on_hand": 40,
+      "reorder_level": 10
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 6,
+    "sku": "SKU-FA-006",
+    "name": "Leather Sandals",
+    "description": "Handmade, genuine leather",
+    "category": {
+      "id": 3,
+      "name": "Fashion"
+    },
+    "unit_price": 15500.0,
+    "is_active": true,
+    "attributes": {
+      "colour": "Brown",
+      "size": "43"
+    },
+    "stock": {
+      "quantity_on_hand": 0,
+      "reorder_level": 5
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 7,
+    "sku": "SKU-HM-007",
+    "name": "Non-stick Frying Pan 28cm",
+    "description": "Aluminium body, bakelite handle",
+    "category": {
+      "id": 4,
+      "name": "Home & Kitchen"
+    },
+    "unit_price": 9800.0,
+    "is_active": true,
+    "attributes": {
+      "diameter": "28cm"
+    },
+    "stock": {
+      "quantity_on_hand": 22,
+      "reorder_level": 5
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 8,
+    "sku": "SKU-GR-008",
+    "name": "Parboiled Rice 10kg",
+    "description": "Long grain, stone-free",
+    "category": {
+      "id": 5,
+      "name": "Groceries"
+    },
+    "unit_price": 26000.0,
+    "is_active": true,
+    "attributes": {
+      "weight": "10kg"
+    },
+    "stock": {
+      "quantity_on_hand": 80,
+      "reorder_level": 20
+    },
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  }
+]

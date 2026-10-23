@@ -1,0 +1,99 @@
+[
+  {
+    "_id": 1,
+    "full_name": "Adaeze Okonkwo",
+    "email": "adaeze.okonkwo@example.com",
+    "phone": "08031112222",
+    "addresses": [
+      {
+        "id": 1,
+        "street": "12 Sapele Road",
+        "city": "Benin City",
+        "state": "Edo",
+        "is_default": true
+      },
+      {
+        "id": 2,
+        "street": "4 Ugbowo Housing Estate",
+        "city": "Benin City",
+        "state": "Edo",
+        "is_default": false
+      }
+    ],
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 2,
+    "full_name": "Tunde Bakare",
+    "email": "tunde.bakare@example.com",
+    "phone": "08052223333",
+    "addresses": [
+      {
+        "id": 3,
+        "street": "23 Allen Avenue",
+        "city": "Ikeja",
+        "state": "Lagos",
+        "is_default": true
+      }
+    ],
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 3,
+    "full_name": "Fatima Abdullahi",
+    "email": "fatima.abdullahi@example.com",
+    "phone": "07063334444",
+    "addresses": [
+      {
+        "id": 4,
+        "street": "7 Ahmadu Bello Way",
+        "city": "Kaduna",
+        "state": "Kaduna",
+        "is_default": true
+      }
+    ],
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 4,
+    "full_name": "Emeka Nwosu",
+    "email": "emeka.nwosu@example.com",
+    "phone": "09014445555",
+    "addresses": [
+      {
+        "id": 5,
+        "street": "15 Okpara Avenue",
+        "city": "Enugu",
+        "state": "Enugu",
+        "is_default": true
+      }
+    ],
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  },
+  {
+    "_id": 5,
+    "full_name": "Ngozi Eze",
+    "email": "ngozi.eze@example.com",
+    "phone": "08125556666",
+    "addresses": [
+      {
+        "id": 6,
+        "street": "9 Aba Road",
+        "city": "Port Harcourt",
+        "state": "Rivers",
+        "is_default": true
+      }
+    ],
+    "created_at": {
+      "$date": "2026-10-16T23:28:43Z"
+    }
+  }
+]

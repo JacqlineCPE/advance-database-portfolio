@@ -1,0 +1,32 @@
+[
+  {
+    "_id": 1,
+    "name": "Electronics",
+    "parent_id": null,
+    "path": "Electronics"
+  },
+  {
+    "_id": 2,
+    "name": "Phones",
+    "parent_id": 1,
+    "path": "Electronics > Phones"
+  },
+  {
+    "_id": 3,
+    "name": "Fashion",
+    "parent_id": null,
+    "path": "Fashion"
+  },
+  {
+    "_id": 4,
+    "name": "Home & Kitchen",
+    "parent_id": null,
+    "path": "Home & Kitchen"
+  },
+  {
+    "_id": 5,
+    "name": "Groceries",
+    "parent_id": null,
+    "path": "Groceries"
+  }
+]

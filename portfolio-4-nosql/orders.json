@@ -1,0 +1,302 @@
+[
+  {
+    "_id": 1,
+    "customer": {
+      "id": 1,
+      "full_name": "Adaeze Okonkwo",
+      "email": "adaeze.okonkwo@example.com"
+    },
+    "delivery_address": {
+      "street": "12 Sapele Road",
+      "city": "Benin City",
+      "state": "Edo"
+    },
+    "order_date": {
+      "$date": "2026-10-01T09:15:00Z"
+    },
+    "status": "delivered",
+    "total_amount": 222000.0,
+    "items": [
+      {
+        "product_id": 1,
+        "sku": "SKU-PH-001",
+        "name": "Smartphone X10 128GB",
+        "quantity": 1,
+        "unit_price": 185000.0,
+        "line_total": 185000.0
+      },
+      {
+        "product_id": 3,
+        "sku": "SKU-EL-003",
+        "name": "Power Bank 20000mAh",
+        "quantity": 2,
+        "unit_price": 18500.0,
+        "line_total": 37000.0
+      }
+    ],
+    "payments": [
+      {
+        "amount": 222000.0,
+        "method": "card",
+        "status": "successful",
+        "reference": "PAY-20261001-0001",
+        "paid_at": {
+          "$date": "2026-10-01T09:16:10Z"
+        }
+      }
+    ],
+    "delivery": {
+      "courier": "GIG Logistics",
+      "tracking_number": "TRK-ML-000001",
+      "status": "delivered",
+      "dispatched_at": {
+        "$date": "2026-10-02T07:30:00Z"
+      },
+      "delivered_at": {
+        "$date": "2026-10-03T16:20:00Z"
+      },
+      "history": [
+        {
+          "status": "pending",
+          "location": "Benin City warehouse",
+          "recorded_at": {
+            "$date": "2026-10-01T09:20:00Z"
+          }
+        },
+        {
+          "status": "dispatched",
+          "location": "Benin City hub",
+          "recorded_at": {
+            "$date": "2026-10-02T07:30:00Z"
+          }
+        },
+        {
+          "status": "in_transit",
+          "location": "Ring Road sorting",
+          "recorded_at": {
+            "$date": "2026-10-02T14:10:00Z"
+          }
+        },
+        {
+          "status": "delivered",
+          "location": "12 Sapele Road",
+          "recorded_at": {
+            "$date": "2026-10-03T16:20:00Z"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "_id": 2,
+    "customer": {
+      "id": 2,
+      "full_name": "Tunde Bakare",
+      "email": "tunde.bakare@example.com"
+    },
+    "delivery_address": {
+      "street": "23 Allen Avenue",
+      "city": "Ikeja",
+      "state": "Lagos"
+    },
+    "order_date": {
+      "$date": "2026-10-05T14:40:00Z"
+    },
+    "status": "shipped",
+    "total_amount": 39500.0,
+    "items": [
+      {
+        "product_id": 5,
+        "sku": "SKU-FA-005",
+        "name": "Ankara Print Shirt",
+        "quantity": 2,
+        "unit_price": 12000.0,
+        "line_total": 24000.0
+      },
+      {
+        "product_id": 6,
+        "sku": "SKU-FA-006",
+        "name": "Leather Sandals",
+        "quantity": 1,
+        "unit_price": 15500.0,
+        "line_total": 15500.0
+      }
+    ],
+    "payments": [
+      {
+        "amount": 39500.0,
+        "method": "bank_transfer",
+        "status": "failed",
+        "reference": "PAY-20261005-0002",
+        "paid_at": null
+      },
+      {
+        "amount": 39500.0,
+        "method": "bank_transfer",
+        "status": "successful",
+        "reference": "PAY-20261005-0003",
+        "paid_at": {
+          "$date": "2026-10-05T15:02:45Z"
+        }
+      }
+    ],
+    "delivery": {
+      "courier": "Kwik Delivery",
+      "tracking_number": "TRK-ML-000002",
+      "status": "in_transit",
+      "dispatched_at": {
+        "$date": "2026-10-06T09:00:00Z"
+      },
+      "delivered_at": null,
+      "history": [
+        {
+          "status": "pending",
+          "location": "Lagos warehouse",
+          "recorded_at": {
+            "$date": "2026-10-05T15:05:00Z"
+          }
+        },
+        {
+          "status": "dispatched",
+          "location": "Ikeja hub",
+          "recorded_at": {
+            "$date": "2026-10-06T09:00:00Z"
+          }
+        },
+        {
+          "status": "in_transit",
+          "location": "Allen Avenue route",
+          "recorded_at": {
+            "$date": "2026-10-06T13:45:00Z"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "_id": 3,
+    "customer": {
+      "id": 3,
+      "full_name": "Fatima Abdullahi",
+      "email": "fatima.abdullahi@example.com"
+    },
+    "delivery_address": {
+      "street": "7 Ahmadu Bello Way",
+      "city": "Kaduna",
+      "state": "Kaduna"
+    },
+    "order_date": {
+      "$date": "2026-10-10T11:05:00Z"
+    },
+    "status": "paid",
+    "total_amount": 245000.0,
+    "items": [
+      {
+        "product_id": 2,
+        "sku": "SKU-PH-002",
+        "name": "Smartphone Pro 256GB",
+        "quantity": 1,
+        "unit_price": 245000.0,
+        "line_total": 245000.0
+      }
+    ],
+    "payments": [
+      {
+        "amount": 245000.0,
+        "method": "card",
+        "status": "successful",
+        "reference": "PAY-20261010-0004",
+        "paid_at": {
+          "$date": "2026-10-10T11:06:00Z"
+        }
+      }
+    ],
+    "delivery": null
+  },
+  {
+    "_id": 4,
+    "customer": {
+      "id": 4,
+      "full_name": "Emeka Nwosu",
+      "email": "emeka.nwosu@example.com"
+    },
+    "delivery_address": {
+      "street": "15 Okpara Avenue",
+      "city": "Enugu",
+      "state": "Enugu"
+    },
+    "order_date": {
+      "$date": "2026-10-12T18:30:00Z"
+    },
+    "status": "pending",
+    "total_amount": 35800.0,
+    "items": [
+      {
+        "product_id": 7,
+        "sku": "SKU-HM-007",
+        "name": "Non-stick Frying Pan 28cm",
+        "quantity": 1,
+        "unit_price": 9800.0,
+        "line_total": 9800.0
+      },
+      {
+        "product_id": 8,
+        "sku": "SKU-GR-008",
+        "name": "Parboiled Rice 10kg",
+        "quantity": 1,
+        "unit_price": 26000.0,
+        "line_total": 26000.0
+      }
+    ],
+    "payments": [
+      {
+        "amount": 35800.0,
+        "method": "pay_on_delivery",
+        "status": "initiated",
+        "reference": "PAY-20261012-0005",
+        "paid_at": null
+      }
+    ],
+    "delivery": null
+  },
+  {
+    "_id": 5,
+    "customer": {
+      "id": 1,
+      "full_name": "Adaeze Okonkwo",
+      "email": "adaeze.okonkwo@example.com"
+    },
+    "delivery_address": {
+      "street": "4 Ugbowo Housing Estate",
+      "city": "Benin City",
+      "state": "Edo"
+    },
+    "order_date": {
+      "$date": "2026-10-13T08:00:00Z"
+    },
+    "status": "cancelled",
+    "total_amount": 32000.0,
+    "items": [
+      {
+        "product_id": 4,
+        "sku": "SKU-EL-004",
+        "name": "Bluetooth Speaker",
+        "quantity": 1,
+        "unit_price": 32000.0,
+        "line_total": 32000.0
+      }
+    ],
+    "payments": [
+      {
+        "amount": 32000.0,
+        "method": "card",
+        "status": "refunded",
+        "reference": "PAY-20261013-0006",
+        "paid_at": {
+          "$date": "2026-10-13T08:01:30Z"
+        }
+      }
+    ],
+    "delivery": null
+  }
+]
